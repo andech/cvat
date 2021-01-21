@@ -14,22 +14,26 @@ import Empty from 'antd/lib/empty';
 import Tree, { AntTreeNode, TreeNodeNormal } from 'antd/lib/tree/Tree';
 
 import consts from 'consts';
+import { ClowderFileDto } from 'reducers/interfaces';
+import ClowderSyncTab from './clowder-sync-tab/clowder-sync-tab';
 
 export interface Files {
     local: File[];
     share: string[];
     remote: string[];
+    clowder?: ClowderFileDto[];
 }
 
 interface State {
     files: Files;
     expandedKeys: string[];
-    active: 'local' | 'share' | 'remote';
+    active: 'local' | 'share' | 'remote' | 'clowder';
 }
 
 interface Props {
     withRemote: boolean;
     treeData: TreeNodeNormal[];
+    clowderFiles: ClowderFileDto[];
     onLoadData: (key: string, success: () => void, failure: () => void) => void;
 }
 
@@ -52,10 +56,12 @@ export default class FileManager extends React.PureComponent<Props, State> {
 
     public getFiles(): Files {
         const { active, files } = this.state;
+        const { clowderFiles } = this.props;
         return {
             local: active === 'local' ? files.local : [],
             share: active === 'share' ? files.share : [],
             remote: active === 'remote' ? files.remote : [],
+            clowder: active === 'clowder' ? clowderFiles : [],
         };
     }
 
@@ -233,6 +239,10 @@ export default class FileManager extends React.PureComponent<Props, State> {
                     {this.renderLocalSelector()}
                     {this.renderShareSelector()}
                     {withRemote && this.renderRemoteSelector()}
+
+                    <Tabs.TabPane key='clowder' tab='Clowder Sync'>
+                        <ClowderSyncTab />
+                    </Tabs.TabPane>
                 </Tabs>
             </>
         );

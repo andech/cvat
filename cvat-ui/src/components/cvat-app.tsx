@@ -161,7 +161,6 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
                         }}
                     />
                 ),
-                duration: null,
             });
         }
 

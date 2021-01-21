@@ -249,10 +249,14 @@ export interface NotificationsState {
         userAgreements: {
             fetching: null | ErrorState;
         };
+        clowder: {
+            fetching: null | ErrorState;
+        };
     };
     messages: {
         tasks: {
             loadingDone: string;
+            clowderSyncingDone: string;
         };
         models: {
             inferenceDone: string;
@@ -485,6 +489,23 @@ export interface MetaState {
     showModelsButton: boolean;
 }
 
+export interface ClowderFileDto {
+    clowderid: string;
+    name: string;
+    is_file: boolean;
+    created: string | null;
+    srcdatasetid: string;
+}
+
+export interface ClowderState {
+    datasetId: string;
+    apiKey: string;
+    currentFolderFiles: ClowderFileDto[];
+    filesToUpload: ClowderFileDto[];
+    path: ClowderFileDto[];
+    fetching: boolean;
+}
+
 export interface CombinedState {
     auth: AuthState;
     tasks: TasksState;
@@ -499,4 +520,5 @@ export interface CombinedState {
     settings: SettingsState;
     shortcuts: ShortcutsState;
     meta: MetaState;
+    clowder: ClowderState;
 }

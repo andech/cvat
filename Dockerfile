@@ -98,7 +98,7 @@ RUN chown -R ${USER}:${USER} .
 
 # RUN all commands below as 'django' user
 USER ${USER}
-
+RUN chmod +x wait-for-it.sh
 RUN mkdir data share media keys logs /tmp/supervisord
 RUN python3 manage.py collectstatic
 

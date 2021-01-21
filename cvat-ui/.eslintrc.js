@@ -6,21 +6,23 @@ module.exports = {
     env: {
         node: true,
     },
+    parser: '@typescript-eslint/parser',
     parserOptions: {
         parser: '@typescript-eslint/parser',
         ecmaVersion: 6,
         project: './tsconfig.json',
     },
-    plugins: ['@typescript-eslint', 'import'],
+    plugins: ['@typescript-eslint', 'import', 'prettier'],
     extends: [
         'plugin:@typescript-eslint/recommended',
         'airbnb-typescript',
         'plugin:import/errors',
         'plugin:import/warnings',
         'plugin:import/typescript',
+        'prettier',
     ],
     rules: {
-        '@typescript-eslint/indent': ['warn', 4],
+        '@typescript-eslint/indent': ['off', 4],
         'react/jsx-indent': ['warn', 4],
         'react/jsx-indent-props': ['warn', 4],
         'react/jsx-props-no-spreading': 0,
@@ -35,7 +37,6 @@ module.exports = {
         quotes: ['error', 'single'],
         'max-len': ['error', { code: 120, ignoreStrings: true }],
         'func-names': ['warn', 'never'],
-        'operator-linebreak': ['error', 'after'],
         'react/require-default-props': 'off',
         'react/no-unused-prop-types': 'off',
         'react/no-array-index-key': 'off',
@@ -50,6 +51,7 @@ module.exports = {
                 },
             },
         ],
+        'prettier/prettier': ['error'],
     },
     settings: {
         'import/resolver': {

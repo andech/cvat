@@ -185,6 +185,9 @@ export enum AnnotationActionTypes {
     SAVE_LOGS_FAILED = 'SAVE_LOGS_FAILED',
     INTERACT_WITH_CANVAS = 'INTERACT_WITH_CANVAS',
     SET_AI_TOOLS_REF = 'SET_AI_TOOLS_REF',
+    SYNC_JOB_TASK_WITH_CLOWDER = 'SYNC_JOB_TASK_WITH_CLOWDER',
+    SYNC_JOB_TASK_WITH_CLOWDER_SUCCESS = 'SYNC_JOB_TASK_WITH_CLOWDER_SUCCESS',
+    SYNC_JOB_TASK_WITH_CLOWDER_FAILED = 'SYNC_JOB_TASK_WITH_CLOWDER_FAILED',
 }
 
 export function saveLogsAsync(): ThunkAction {
@@ -1468,6 +1471,43 @@ export function redrawShapeAsync(): ThunkAction {
                     crosshair: [ShapeType.RECTANGLE, ShapeType.CUBOID].includes(state.shapeType),
                 });
             }
+        }
+    };
+}
+
+function syncJobTaskWithClowder(): AnyAction {
+    const action = {
+        type: AnnotationActionTypes.SYNC_JOB_TASK_WITH_CLOWDER,
+    };
+
+    return action;
+}
+
+function syncJobTaskWithClowderSuccess(): AnyAction {
+    const action = {
+        type: AnnotationActionTypes.SYNC_JOB_TASK_WITH_CLOWDER_SUCCESS,
+    };
+
+    return action;
+}
+
+function syncJobTaskWithClowderFailed(error: any): AnyAction {
+    const action = {
+        type: AnnotationActionTypes.SYNC_JOB_TASK_WITH_CLOWDER_FAILED,
+        payload: { error },
+    };
+
+    return action;
+}
+
+export function syncJobTaskWithClowderAsync(jobInstance: any): ThunkAction<Promise<void>, AnyAction> {
+    return async (dispatch: ActionCreator<Dispatch>): Promise<void> => {
+        try {
+            dispatch(syncJobTaskWithClowder());
+            await jobInstance.clowderSync();
+            dispatch(syncJobTaskWithClowderSuccess());
+        } catch (error) {
+            dispatch(syncJobTaskWithClowderFailed(error));
         }
     };
 }

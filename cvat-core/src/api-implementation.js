@@ -6,9 +6,7 @@
     const PluginRegistry = require('./plugins');
     const serverProxy = require('./server-proxy');
     const lambdaManager = require('./lambda-manager');
-    const {
-        isBoolean, isInteger, isEnum, isString, checkFilter,
-    } = require('./common');
+    const { isBoolean, isInteger, isEnum, isString, checkFilter } = require('./common');
 
     const { TaskStatus, TaskMode } = require('./enums');
 
@@ -201,6 +199,16 @@
 
         cvat.server.installedApps.implementation = async () => {
             const result = await serverProxy.server.installedApps();
+            return result;
+        };
+
+        cvat.clowder.getRootFiles.implementation = async (datasetId, clowderApiKey) => {
+            const result = await serverProxy.clowder.getRootFiles(datasetId, clowderApiKey);
+            return result;
+        };
+
+        cvat.clowder.getFolderFiles.implementation = async (datasetId, folderId, clowderApiKey) => {
+            const result = await serverProxy.clowder.getFolderFiles(datasetId, folderId, clowderApiKey);
             return result;
         };
 

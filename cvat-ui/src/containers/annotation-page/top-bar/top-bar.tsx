@@ -23,6 +23,7 @@ import {
     searchEmptyFrameAsync,
     changeWorkspace as changeWorkspaceAction,
     activateObject,
+    syncJobTaskWithClowderAsync,
 } from 'actions/annotation-actions';
 import { Canvas } from 'cvat-canvas-wrapper';
 
@@ -54,6 +55,7 @@ interface DispatchToProps {
     onChangeFrame(frame: number, fillBuffer?: boolean, frameStep?: number): void;
     onSwitchPlay(playing: boolean): void;
     onSaveAnnotation(sessionInstance: any): void;
+    onClowderSync(sessionInstance: any): void;
     showStatistics(sessionInstance: any): void;
     undo(sessionInstance: any, frameNumber: any): void;
     redo(sessionInstance: any, frameNumber: any): void;
@@ -116,6 +118,9 @@ function mapDispatchToProps(dispatch: any): DispatchToProps {
         },
         onSaveAnnotation(sessionInstance: any): void {
             dispatch(saveAnnotationsAsync(sessionInstance));
+        },
+        onClowderSync(sessionInstance: any): void {
+            dispatch(syncJobTaskWithClowderAsync(sessionInstance));
         },
         showStatistics(sessionInstance: any): void {
             dispatch(collectStatisticsAsync(sessionInstance));
@@ -367,6 +372,11 @@ class AnnotationTopBarContainer extends React.PureComponent<Props, State> {
         onSaveAnnotation(jobInstance);
     };
 
+    private onClowderSync = (): void => {
+        const { onClowderSync, jobInstance } = this.props;
+        onClowderSync(jobInstance);
+    };
+
     private onChangePlayerSliderValue = (value: SliderValue): void => {
         const { playing, onSwitchPlay } = this.props;
         if (playing) {
@@ -533,6 +543,7 @@ class AnnotationTopBarContainer extends React.PureComponent<Props, State> {
                     showStatistics={this.showStatistics}
                     onSwitchPlay={this.onSwitchPlay}
                     onSaveAnnotation={this.onSaveAnnotation}
+                    onClowderSync={this.onClowderSync}
                     onPrevFrame={this.onPrevFrame}
                     onNextFrame={this.onNextFrame}
                     onForward={this.onForward}

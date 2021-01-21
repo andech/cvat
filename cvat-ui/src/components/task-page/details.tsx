@@ -30,6 +30,7 @@ interface Props {
     activeInference: ActiveInference | null;
     cancelAutoAnnotation(): void;
     onTaskUpdate: (taskInstance: any) => void;
+    onClowderSync: (taskInstance: any) => void;
 }
 
 interface State {
@@ -148,6 +149,19 @@ export default class DetailsComponent extends React.PureComponent<Props, State> 
                 className='cvat-text-color'
             >
                 {name}
+            </Title>
+        );
+    }
+
+    private renderClowderSyncButton(): JSX.Element {
+        const { taskInstance, onClowderSync } = this.props;
+
+        return (
+            <Title level={4}>
+                <Button type='link' onClick={() => onClowderSync(taskInstance)}>
+                    <Icon type='cloud-sync' />
+                    Clowder Sync
+                </Button>
             </Title>
         );
     }
@@ -396,8 +410,9 @@ export default class DetailsComponent extends React.PureComponent<Props, State> 
         const { activeInference, cancelAutoAnnotation } = this.props;
         return (
             <div className='cvat-task-details'>
-                <Row type='flex' justify='start' align='middle'>
+                <Row type='flex' justify='space-between' align='middle'>
                     <Col>{this.renderTaskName()}</Col>
+                    <Col>{this.renderClowderSyncButton()}</Col>
                 </Row>
                 <Row type='flex' justify='space-between' align='top'>
                     <Col md={8} lg={7} xl={7} xxl={6}>

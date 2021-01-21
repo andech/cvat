@@ -6,9 +6,7 @@
     const PluginRegistry = require('./plugins');
     const loggerStorage = require('./logger-storage');
     const serverProxy = require('./server-proxy');
-    const {
-        getFrame, getRanges, getPreview, clear: clearFrames,
-    } = require('./frames');
+    const { getFrame, getRanges, getPreview, clear: clearFrames } = require('./frames');
     const { ArgumentError } = require('./exceptions');
     const { TaskStatus } = require('./enums');
     const { Label } = require('./labels');
@@ -834,6 +832,21 @@
             const result = await PluginRegistry.apiWrapper.call(this, Job.prototype.save);
             return result;
         }
+
+        /**
+         * Method save annotation files into clowder storage
+         * @method clowderSync
+         * @memberof module:API.cvat.classes.Job
+         * @readonly
+         * @instance
+         * @async
+         * @throws {module:API.cvat.exceptions.ServerError}
+         * @throws {module:API.cvat.exceptions.PluginError}
+         */
+        async clowderSync() {
+            const result = await PluginRegistry.apiWrapper.call(this, Job.prototype.clowderSync);
+            return result;
+        }
     }
 
     /**
@@ -877,6 +890,7 @@
                 data_original_chunk_type: undefined,
                 use_zip_chunks: undefined,
                 use_cache: undefined,
+                clowder_api_key: undefined,
             };
 
             for (const property in data) {
@@ -894,6 +908,7 @@
                 server_files: [],
                 client_files: [],
                 remote_files: [],
+                clowder_files: [],
             });
 
             if (Array.isArray(initialData.segments)) {
@@ -1243,6 +1258,44 @@
                         },
                     },
                     /**
+                     * List of files from clowder
+                     * @name clowderFiles
+                     * @type {File[]}
+                     * @memberof module:API.cvat.classes.Task
+                     * @instance
+                     * @throws {module:API.cvat.exceptions.ArgumentError}
+                     */
+                    clowderFiles: {
+                        get: () => [...data.files.clowder_files],
+                        set: (clowderFiles) => {
+                            if (!Array.isArray(clowderFiles)) {
+                                throw new ArgumentError(
+                                    `Value must be an array. But ${typeof clowderFiles} has been got.`,
+                                );
+                            }
+
+                            for (const value of clowderFiles) {
+                                const isObject = typeof value === 'object';
+                                const hasClowderId = Object.prototype.hasOwnProperty.call(value, 'clowderid');
+                                const hasName = Object.prototype.hasOwnProperty.call(value, 'name');
+                                const hasIsFile = Object.prototype.hasOwnProperty.call(value, 'is_file');
+                                const hasSrcDatasetId = Object.prototype.hasOwnProperty.call(value, 'srcdatasetid');
+                                const hasCreated = Object.prototype.hasOwnProperty.call(value, 'created');
+
+                                const isClowderFile =
+                                    isObject && hasClowderId && hasName && hasIsFile && hasSrcDatasetId && hasCreated;
+
+                                if (!isClowderFile) {
+                                    throw new ArgumentError(
+                                        'Array values must be a ClowderFile. But got something else.',
+                                    );
+                                }
+                            }
+
+                            Array.prototype.push.apply(data.files.clowder_files, clowderFiles);
+                        },
+                    },
+                    /**
                      * The first frame of a video to annotation
                      * @name startFrame
                      * @type {integer}
@@ -1310,6 +1363,22 @@
                     },
                     dataChunkType: {
                         get: () => data.data_compressed_chunk_type,
+                    },
+                    /**
+                     * @name clowderApiKey
+                     * @type {string}
+                     * @memberof module:API.cvat.classes.Task
+                     * @instance
+                     * @throws {module:API.cvat.exceptions.ArgumentError}
+                     */
+                    clowderApiKey: {
+                        get: () => data.clowder_api_key,
+                        set: (apiKey) => {
+                            if (!apiKey.trim().length) {
+                                throw new ArgumentError('Clowder API key must not be empty');
+                            }
+                            data.clowder_api_key = apiKey;
+                        },
                     },
                 }),
             );
@@ -1404,6 +1473,21 @@
             const result = await PluginRegistry.apiWrapper.call(this, Task.prototype.delete);
             return result;
         }
+
+        /**
+         * Method save annotation files into clowder storage
+         * @method clowderSync
+         * @memberof module:API.cvat.classes.Task
+         * @readonly
+         * @instance
+         * @async
+         * @throws {module:API.cvat.exceptions.ServerError}
+         * @throws {module:API.cvat.exceptions.PluginError}
+         */
+        async clowderSync() {
+            const result = await PluginRegistry.apiWrapper.call(this, Task.prototype.clowderSync);
+            return result;
+        }
     }
 
     module.exports = {
@@ -1453,6 +1537,11 @@
         }
 
         throw new ArgumentError('Can not save job without and id');
+    };
+
+    Job.prototype.clowderSync.implementation = async function () {
+        const result = await serverProxy.jobs.clowderSync(this.task.id);
+        return result;
     };
 
     Job.prototype.frames.get.implementation = async function (frame, isPlaying, step) {
@@ -1683,6 +1772,7 @@
             client_files: this.clientFiles,
             server_files: this.serverFiles,
             remote_files: this.remoteFiles,
+            clowder_files: this.clowderFiles,
             image_quality: this.imageQuality,
             use_zip_chunks: this.useZipChunks,
             use_cache: this.useCache,
@@ -1700,6 +1790,9 @@
         if (typeof this.dataChunkSize !== 'undefined') {
             taskDataSpec.chunk_size = this.dataChunkSize;
         }
+        if (this.clowderApiKey) {
+            taskDataSpec.clowder_api_key = this.clowderApiKey;
+        }
 
         const task = await serverProxy.tasks.createTask(taskSpec, taskDataSpec, onUpdate);
         return new Task(task);
@@ -1707,6 +1800,11 @@
 
     Task.prototype.delete.implementation = async function () {
         const result = await serverProxy.tasks.deleteTask(this.id);
+        return result;
+    };
+
+    Task.prototype.clowderSync.implementation = async function () {
+        const result = await serverProxy.tasks.clowderSync(this.id);
         return result;
     };
 

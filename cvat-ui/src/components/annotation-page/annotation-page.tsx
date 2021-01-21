@@ -56,6 +56,10 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
         return <Spin size='large' className='cvat-spinner' />;
     }
 
+    if (job && fetching) {
+        return <Spin size='large' className='cvat-spinner' />;
+    }
+
     if (typeof job === 'undefined') {
         return (
             <Result

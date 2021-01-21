@@ -340,6 +340,20 @@ export default (state: TasksState = defaultState, action: AnyAction): TasksState
                 hideEmpty: action.payload.hideEmpty,
             };
         }
+        case TasksActionTypes.SYNC_TASK_WITH_CLOWDER: {
+            return {
+                ...state,
+                updating: true,
+            };
+        }
+
+        case TasksActionTypes.SYNC_TASK_WITH_CLOWDER_SUCCESS:
+        case TasksActionTypes.SYNC_TASK_WITH_CLOWDER_FAILED: {
+            return {
+                ...state,
+                updating: false,
+            };
+        }
         case BoundariesActionTypes.RESET_AFTER_ERROR:
         case AuthActionTypes.LOGOUT_SUCCESS: {
             return { ...defaultState };

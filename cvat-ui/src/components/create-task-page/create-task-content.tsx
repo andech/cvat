@@ -17,6 +17,7 @@ import BasicConfigurationForm, { BaseConfiguration } from './basic-configuration
 import AdvancedConfigurationForm, { AdvancedConfiguration } from './advanced-configuration-form';
 import LabelsEditor from '../labels-editor/labels-editor';
 import { Files } from '../file-manager/file-manager';
+import ClowderLimitationsExpand from './clowder-limitations-expand';
 
 export interface CreateTaskData {
     basic: BaseConfiguration;
@@ -30,6 +31,7 @@ interface Props {
     status: string;
     taskId: number | null;
     installedGit: boolean;
+    clowderSyncing: boolean;
 }
 
 type State = CreateTaskData;
@@ -48,6 +50,7 @@ const defaultState = {
         local: [],
         share: [],
         remote: [],
+        clowder: [],
     },
 };
 
@@ -191,6 +194,9 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
             <Col span={24}>
                 <Text type='danger'>* </Text>
                 <Text className='cvat-text-color'>Select files:</Text>
+
+                <ClowderLimitationsExpand />
+
                 <ConnectedFileManager
                     ref={(container: any): void => {
                         this.fileManagerContainer = container;
@@ -221,7 +227,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
     }
 
     public render(): JSX.Element {
-        const { status } = this.props;
+        const { status, clowderSyncing } = this.props;
         const loading = !!status && status !== 'CREATED' && status !== 'FAILED';
 
         return (
@@ -237,7 +243,12 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
 
                 <Col span={18}>{loading ? <Alert message={status} /> : null}</Col>
                 <Col span={6}>
-                    <Button loading={loading} disabled={loading} type='primary' onClick={this.handleSubmitClick}>
+                    <Button
+                        loading={loading}
+                        disabled={loading || clowderSyncing}
+                        type='primary'
+                        onClick={this.handleSubmitClick}
+                    >
                         Submit
                     </Button>
                 </Col>

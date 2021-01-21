@@ -14,6 +14,7 @@ interface StateToProps {
     status: string;
     error: string;
     installedGit: boolean;
+    clowderSyncing: boolean;
 }
 
 interface DispatchToProps {
@@ -31,6 +32,7 @@ function mapStateToProps(state: CombinedState): StateToProps {
     return {
         ...creates,
         installedGit: state.plugins.list.GIT_INTEGRATION,
+        clowderSyncing: state.clowder.fetching,
     };
 }
 

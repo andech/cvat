@@ -1011,6 +1011,26 @@ export default (state = defaultState, action: AnyAction): AnnotationState => {
         case AuthActionTypes.LOGOUT_SUCCESS: {
             return { ...defaultState };
         }
+        case AnnotationActionTypes.SYNC_JOB_TASK_WITH_CLOWDER: {
+            return {
+                ...state,
+                job: {
+                    ...state.job,
+                    fetching: true,
+                },
+            };
+        }
+
+        case AnnotationActionTypes.SYNC_JOB_TASK_WITH_CLOWDER_SUCCESS:
+        case AnnotationActionTypes.SYNC_JOB_TASK_WITH_CLOWDER_FAILED: {
+            return {
+                ...state,
+                job: {
+                    ...state.job,
+                    fetching: false,
+                },
+            };
+        }
         default: {
             return state;
         }

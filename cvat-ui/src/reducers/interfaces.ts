@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Intel Corporation
+// Copyright (C) 2021 Intel Corporation
 //
 // SPDX-License-Identifier: MIT
 
@@ -298,10 +298,14 @@ export interface NotificationsState {
             commentingIssue: null | ErrorState;
             submittingReview: null | ErrorState;
         };
+        clowder: {
+            fetching: null | ErrorState;
+        };
     };
     messages: {
         tasks: {
             loadingDone: string;
+            clowderSyncingDone: string;
         };
         models: {
             inferenceDone: string;
@@ -552,6 +556,23 @@ export interface ReviewState {
     };
 }
 
+export interface ClowderFileDto {
+    clowderid: string;
+    name: string;
+    is_file: boolean;
+    created: string | null;
+    srcdatasetid: string;
+}
+
+export interface ClowderState {
+    datasetId: string;
+    apiKey: string;
+    currentFolderFiles: ClowderFileDto[];
+    filesToUpload: ClowderFileDto[];
+    path: ClowderFileDto[];
+    fetching: boolean;
+}
+
 export interface CombinedState {
     auth: AuthState;
     projects: ProjectsState;
@@ -567,6 +588,8 @@ export interface CombinedState {
     settings: SettingsState;
     shortcuts: ShortcutsState;
     review: ReviewState;
+    meta: MetaState;
+    clowder: ClowderState;
 }
 
 export enum DimensionType {

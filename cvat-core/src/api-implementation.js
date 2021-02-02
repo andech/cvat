@@ -1,6 +1,7 @@
-// Copyright (C) 2019-2020 Intel Corporation
+// Copyright (C) 2021 Intel Corporation
 //
 // SPDX-License-Identifier: MIT
+
 
 (() => {
     const PluginRegistry = require('./plugins');
@@ -199,7 +200,18 @@
             }
 
             const searchParams = new URLSearchParams();
-            for (const field of ['name', 'owner', 'assignee', 'search', 'status', 'mode', 'id', 'page', 'projectId', 'dimension']) {
+            for (const field of [
+                'name',
+                'owner',
+                'assignee',
+                'search',
+                'status',
+                'mode',
+                'id',
+                'page',
+                'projectId',
+                'dimension',
+            ]) {
                 if (Object.prototype.hasOwnProperty.call(filter, field)) {
                     searchParams.set(field, filter[field]);
                 }
@@ -253,6 +265,16 @@
         };
 
         cvat.projects.searchNames.implementation = async (search, limit) => serverProxy.projects.searchNames(search, limit);
+
+        cvat.clowder.getRootFiles.implementation = async (datasetId, clowderApiKey) => {
+            const result = await serverProxy.clowder.getRootFiles(datasetId, clowderApiKey);
+            return result;
+        };
+
+        cvat.clowder.getFolderFiles.implementation = async (datasetId, folderId, clowderApiKey) => {
+            const result = await serverProxy.clowder.getFolderFiles(datasetId, folderId, clowderApiKey);
+            return result;
+        };
 
         return cvat;
     }

@@ -150,6 +150,7 @@ COPY --chown=${USER} tests/ ${HOME}/tests
 USER ${USER}
 WORKDIR ${HOME}
 
+RUN chmod +x wait-for-it.sh
 RUN mkdir data share media keys logs /tmp/supervisord
 RUN python3 manage.py collectstatic
 

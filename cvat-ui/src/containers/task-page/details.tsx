@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Intel Corporation
+// Copyright (C) 2021 Intel Corporation
 //
 // SPDX-License-Identifier: MIT
 
@@ -6,7 +6,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import DetailsComponent from 'components/task-page/details';
-import { updateTaskAsync } from 'actions/tasks-actions';
+import { syncTaskWithClowderAsync, updateTaskAsync } from 'actions/tasks-actions';
 import { cancelInferenceAsync } from 'actions/models-actions';
 import { Task, CombinedState, ActiveInference } from 'reducers/interfaces';
 
@@ -22,6 +22,7 @@ interface StateToProps {
 interface DispatchToProps {
     cancelAutoAnnotation(): void;
     onTaskUpdate: (taskInstance: any) => void;
+    onClowderSync: (taskInstance: any) => void;
 }
 
 function mapStateToProps(state: CombinedState, own: OwnProps): StateToProps {
@@ -41,13 +42,14 @@ function mapDispatchToProps(dispatch: any, own: OwnProps): DispatchToProps {
         cancelAutoAnnotation(): void {
             dispatch(cancelInferenceAsync(own.task.instance.id));
         },
+        onClowderSync(taskInstance: any): void {
+            dispatch(syncTaskWithClowderAsync(taskInstance));
+        },
     };
 }
 
 function TaskPageContainer(props: StateToProps & DispatchToProps & OwnProps): JSX.Element {
-    const {
-        task, installedGit, activeInference, cancelAutoAnnotation, onTaskUpdate,
-    } = props;
+    const { task, installedGit, activeInference, cancelAutoAnnotation, onTaskUpdate, onClowderSync } = props;
 
     return (
         <DetailsComponent
@@ -57,6 +59,7 @@ function TaskPageContainer(props: StateToProps & DispatchToProps & OwnProps): JS
             activeInference={activeInference}
             onTaskUpdate={onTaskUpdate}
             cancelAutoAnnotation={cancelAutoAnnotation}
+            onClowderSync={onClowderSync}
         />
     );
 }

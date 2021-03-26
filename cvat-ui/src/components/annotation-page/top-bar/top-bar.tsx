@@ -40,6 +40,7 @@ interface Props {
     showFilters(): void;
     onSwitchPlay(): void;
     onSaveAnnotation(): void;
+    onClowderSync(): void;
     onPrevFrame(): void;
     onNextFrame(): void;
     onForward(): void;
@@ -86,6 +87,7 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
         changeWorkspace,
         onSwitchPlay,
         onSaveAnnotation,
+        onClowderSync,
         onPrevFrame,
         onNextFrame,
         onForward,
@@ -113,6 +115,7 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
                 undoShortcut={undoShortcut}
                 redoShortcut={redoShortcut}
                 onSaveAnnotation={onSaveAnnotation}
+                onClowderSync={onClowderSync}
                 onUndoClick={onUndoClick}
                 onRedoClick={onRedoClick}
             />
